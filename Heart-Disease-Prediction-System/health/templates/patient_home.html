@@ -3,16 +3,67 @@
 {% block body %}
 
 <div class="container-fluid" style="margin-top:100px;margin-bottom:2%;width:100%">
-    <h2 align="center" style="font-weight:bold;font-family:roman">PATIENT DASHBORAD</h2><hr/>
-    <br>
-    <center>
-    <h1>Welcome to the Patient Dashboard. </h1>
-    <div style="height: 0; padding-bottom: calc(52.02%); position:relative; width: 80%; height: 250px;"><iframe
-            allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin"
-            src="https://www.kapwing.com/e/61bce88b1427a3003e13e657"
-            style="border:0; height:100%; left:0; overflow:hidden; position:absolute; top:0; width:100%; border: 5px solid grey;"
-            title="Embedded content made on Kapwing" width="100%"></iframe></div>
-    </center>
+    <div class="text-center mb-5 fade-in">
+        <h2 class="w3ls-title font-weight-bold">Patient Dashboard</h2>
+        <p class="mt-3" style="color: #64748b; font-size: 1.1rem;">Welcome back! Monitor your heart health.</p>
+    </div>
+    <hr/>
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="dashboard-card fade-in">
+                <h3 class="mb-4" style="color: #6366f1;">Welcome to Your Health Portal</h3>
+                <p style="color: #64748b; line-height: 1.8;">
+                    Use the navigation above to predict your heart disease risk, view your medical history, 
+                    and connect with healthcare professionals.
+                </p>
+                <div class="mt-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; color: white; height: 100%;">
+                                <h4 style="color: white; margin-bottom: 20px;">🩺 Quick Actions</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li style="margin-bottom: 15px;">
+                                        <a href="/add_heartdetail" style="color: white; text-decoration: none; font-size: 1.1rem;">
+                                            ➤ Predict Heart Disease Risk
+                                        </a>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <a href="/profile_doctor" style="color: white; text-decoration: none; font-size: 1.1rem;">
+                                            ➤ View My Profile
+                                        </a>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <a href="/view_search_pat" style="color: white; text-decoration: none; font-size: 1.1rem;">
+                                            ➤ View My History
+                                        </a>
+                                    </li>
+                                    <li style="margin-bottom: 15px;">
+                                        <a href="/sent_feedback" style="color: white; text-decoration: none; font-size: 1.1rem;">
+                                            ➤ Send Feedback
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 30px; border-radius: 15px; color: white; height: 100%;">
+                                <h4 style="color: white; margin-bottom: 20px;">❤️ Heart Health Tips</h4>
+                                <ul style="list-style: none; padding: 0; font-size: 0.95rem;">
+                                    <li style="margin-bottom: 12px;">✓ Exercise regularly (30 min/day)</li>
+                                    <li style="margin-bottom: 12px;">✓ Maintain healthy blood pressure</li>
+                                    <li style="margin-bottom: 12px;">✓ Eat a balanced diet</li>
+                                    <li style="margin-bottom: 12px;">✓ Manage stress levels</li>
+                                    <li style="margin-bottom: 12px;">✓ Get regular check-ups</li>
+                                    <li style="margin-bottom: 12px;">✓ Avoid smoking and excess alcohol</li>
+                                    <li style="margin-bottom: 12px;">✓ Monitor cholesterol levels</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 

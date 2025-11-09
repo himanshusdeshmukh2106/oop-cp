@@ -2,12 +2,12 @@
 {% load static %}
 {% block body %}
 	<!-- register -->
-{% ifequal error "create" %}
+{% if error == "create" %}
 <script>
     alert('Doctor Updated Successfully');
     window.location="{% url 'view_doctor' %}";
 </script>
-{% endifequal %}
+{% endif %}
 
 
 	<section class="logins py-5">
@@ -44,11 +44,11 @@
 						<label>Select Type of category[Current Category : "{{doc.category}}"]</label>
 							<select class="form-control" name="type">
 								{% for i in type %}
-								{% ifequal i.name doc.category %}
+								{% if i.name == doc.category %}
 								<option value="{{i.name}}" selected>{{i.name}}</option>
 								{% else %}
 								<option value="{{i.name}}">{{i.name}}</option>
-								{% endifequal %}
+								{% endif %}
 								{% endfor %}
 							</select>
 						</div>

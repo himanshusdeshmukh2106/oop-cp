@@ -1,30 +1,30 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block body %}
-{% ifequal error "pat" %}
+{% if error == "pat" %}
 <script>
     alert('logged in successfully');
     window.location=('{% url 'admin_home' %}');
 </script>
-{% endifequal %}
+{% endif %}
 
-{% ifequal error "notmember" %}
+{% if error == "notmember" %}
 <script>
     alert('Your information is pending.plz Update Your Profile 1st.then continue this service');
     window.location=('{% url 'service_home' %}');
 </script>
-{% endifequal %}
-{% ifequal error "pat2" %}
+{% endif %}
+{% if error == "pat2" %}
 <script>
     alert('logged in successfully');
     window.location=('{% url 'admin_home' %}');
 </script>
-{% endifequal %}
-{% ifequal error "not" %}
+{% endif %}
+{% if error == "not" %}
 <script>
     alert('Username & Password are not Matching');
 </script>
-{% endifequal %}
+{% endif %}
 
 	<section class="logins py-5">
 		<div class="container py-xl-5 py-lg-3">

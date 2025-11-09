@@ -28,7 +28,7 @@
 				</form>
 			</div>
 			</div>
-	{% ifequal t "Name" %}
+	{% if t == "Name" %}
 				<div class="container-fluid" style="width:90%;margin-top:0%">
                     <div class="container-fluid">
                         <h1 align="center" style="font-weight:bold;font-family : 'Monotype Corsiva' ; color : #E6120E ;margin-top:4%">View Doctor Detail</h1>
@@ -60,8 +60,7 @@
                           </tbody>
                       </table>
                   </div>
-	{% else %}
-	{% ifequal t "Type" %}
+	{% elif t == "Type" %}
 			<div class="container-fluid" style="width:90%;margin-top:%">
                     <div class="container-fluid">
                         <h1 align="center" style="font-weight:bold;font-family : 'Monotype Corsiva' ; color : #E6120E ;margin-top:4%">View Doctor Detail</h1>
@@ -91,8 +90,7 @@
                           </tbody>
                       </table>
                   </div></div>
-	{% else %}
-	{% ifequal t "Address" %}
+	{% elif t == "Address" %}
 			<div class="container-fluid" style="width:90%;margin-top:%">
                     <div class="container-fluid">
                         <h1 align="center" style="font-weight:bold;font-family : 'Monotype Corsiva' ; color : #E6120E ;margin-top:4%">View Doctor Detail</h1>
@@ -122,7 +120,5 @@
                           </tbody>
                       </table>
                   </div>
-	{% endifequal %}
-	{% endifequal %}
-	{% endifequal %}
+	{% endif %}
 {% endblock %}

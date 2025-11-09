@@ -311,7 +311,18 @@ def add_heartdetail(request):
             elif key == "sex":
                 list_data.append(1)
                 continue
-            list_data.append(value[0])
+            # Convert string values to numeric (int or float)
+            try:
+                # Try to convert to float first (handles both int and float values)
+                numeric_value = float(value[0])
+                # If it's a whole number, convert to int
+                if numeric_value.is_integer():
+                    list_data.append(int(numeric_value))
+                else:
+                    list_data.append(numeric_value)
+            except (ValueError, TypeError):
+                # If conversion fails, append as is (shouldn't happen with valid input)
+                list_data.append(value[0])
 
         # list_data = [57, 0, 1, 130, 236, 0, 0, 174, 0, 0.0, 1, 1, 2]
         accuracy,pred = prdict_heart_disease(list_data)

@@ -4,59 +4,88 @@
 
 	<section class="logins py-5">
 		<div class="container py-xl-5 py-lg-3">
-			<div class="title-section mb-md-5 mb-4">
-				<h6 class="w3ls-title-sub" style="color:red"></h6><br><br><center>
-				<h3 class="w3ls-title text-uppercase text-dark font-weight-bold">Heart Prediction Output</h3></center>
-			</div><hr/>
-			<div class="login px-sm-12" style="width:100%">
-
-                <h1 align='center' style='color:#414141'>Prediction output</h1><hr><center><p><b>Accuracy (%) is :</b> {{ accuracy }}  </p><p><b>Result:</b>
-                {% if pred == "0" %}
-                <span style='color:green'><strong>You are healthy.</strong></span>
-                {% else %}
-                <span style='color:red'><strong>You may posses a risk of heart disease.</strong></span>
-                {% endif %}
-
-            </p></center>
-
+			<div class="title-section mb-md-5 mb-4 text-center fade-in">
+				<h3 class="w3ls-title text-uppercase font-weight-bold">Heart Disease Prediction Results</h3>
+				<p class="mt-3" style="color: #64748b;">Analysis complete - Review your results below</p>
 			</div>
-            {% if pred != "0" %}
 
-            <div class="container-fluid" style="width:90%;margin-top:3%">
-                    <div class="container-fluid">
-                        <h1 align="center" class="w3ls-title text-uppercase text-dark font-weight-bold">Contact our doctors</h1>
-                         </div><hr>
-                                <table id="example" class="display" style="width:100%">
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Image</th>
-                                      <th>Full Name</th>
-                                      <th>Email</th>
-                                      <th>Contact</th>
-                                      <th>Address</th>
-
-                                  </tr>
-                              </thead>
-                              <tbody>
-                              {% for i in doctor %}
-                                <tr>
-                                  <td>{{forloop.counter}}</td>
-                                  <td><img src="{{i.image.url}}" style="width:80px;height:90px"></td>
-                                  <td>{{i.user.first_name}} {{i.user.last_name}}</td>
-                                  <td>{{i.user.email}}</td>
-                                  <td>{{i.contact}}</td>
-                                  <td>{{i.address}}</td>
-                              </tr>
-                              {% empty %}
-                              <tr>
-                                  <td colspan="5">No Record Found.</td>
-                              </tr>
-                              {% endfor %}
-                          </tbody>
-                      </table>
-                  </div>
-            {% endif %}
+			<div class="row justify-content-center">
+				<div class="col-lg-8">
+					<div class="dashboard-card text-center fade-in">
+						<div class="mb-4">
+							<span class="badge" style="background: #e0e7ff; color: #4f46e5; font-size: 1rem; padding: 0.75rem 1.5rem;">
+								Model Accuracy: {{ accuracy }}%
+							</span>
+						</div>
+						
+						<h2 class="mb-4">Your Result</h2>
+						
+						{% if pred == "0" %}
+						<div class="health-positive" style="font-size: 1.25rem;">
+							<i class="fa fa-check-circle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+							<strong>You are healthy!</strong>
+							<p class="mt-3" style="color: #64748b; font-size: 1rem; font-weight: 400;">
+								Based on the provided parameters, you show no signs of heart disease. 
+								Continue maintaining a healthy lifestyle!
+							</p>
+						</div>
+						{% else %}
+						<div class="health-warning" style="font-size: 1.25rem;">
+							<i class="fa fa-exclamation-triangle" style="font-size: 3rem; display: block; margin-bottom: 1rem;"></i>
+							<strong>Potential Risk Detected</strong>
+							<p class="mt-3" style="color: #64748b; font-size: 1rem; font-weight: 400;">
+								Our analysis indicates you may have a risk of heart disease. 
+								Please consult with a healthcare professional for proper evaluation.
+							</p>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% if pred != "0" %}
+			<div class="row justify-content-center mt-5">
+				<div class="col-lg-10">
+					<div class="dashboard-card fade-in">
+						<h3 class="text-center mb-4" style="color: #6366f1;">
+							<i class="fa fa-user-md mr-2"></i>Connect with Our Doctors
+						</h3>
+						<p class="text-center mb-4" style="color: #64748b;">
+							Schedule a consultation with our experienced healthcare professionals
+						</p>
+						<div class="table-responsive">
+							<table id="example" class="display" style="width:100%">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Image</th>
+										<th>Full Name</th>
+										<th>Email</th>
+										<th>Contact</th>
+										<th>Address</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for i in doctor %}
+									<tr>
+										<td>{{forloop.counter}}</td>
+										<td><img src="{{i.image.url}}" style="width:70px;height:70px;object-fit:cover;"></td>
+										<td><strong>{{i.user.first_name}} {{i.user.last_name}}</strong></td>
+										<td><a href="mailto:{{i.user.email}}" style="color: #6366f1;">{{i.user.email}}</a></td>
+										<td>{{i.contact}}</td>
+										<td>{{i.address}}</td>
+									</tr>
+									{% empty %}
+									<tr>
+										<td colspan="6" class="text-center" style="color: #94a3b8;">No doctors available at the moment.</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
 		</div>
 	</section>
 

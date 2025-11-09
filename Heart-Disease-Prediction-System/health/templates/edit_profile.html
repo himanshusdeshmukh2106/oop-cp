@@ -2,12 +2,12 @@
 {% load static %}
 {% block body %}
 	<!-- register -->
-{% ifequal terror "create" %}
+{% if terror == "create" %}
 <script>
     alert('Detailed Updated Successfully');
     window.location="{% url 'profile_doctor' %}";
 </script>
-{% endifequal %}
+{% endif %}
 
 
 	<section class="logins py-5">
@@ -39,14 +39,14 @@
 						<input type="text" class="form-control" name="contact" value="{{doc.contact}}" placeholder="Enter Contact" required="">
 						</div>
 					</div>
-					{% ifnotequal error "pat" %}
+					{% if error != "pat" %}
 					<div class="form-group row">
 						<div class="col-md-12">
 						<label>Specialist</label>
 							<input name="type" class="form-control" value="{{doc.category}}">
 						</div>
 					</div>
-					{% endifnotequal %}
+					{% endif %}
 					<div class="form-group row">
 						<div class="col-md-6">
 						<label class="mb-2">City</label>

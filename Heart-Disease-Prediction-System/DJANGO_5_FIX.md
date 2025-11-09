@@ -35,6 +35,16 @@ Replaced all instances of:
 
 ## Files Modified
 1. ✅ `health/templates/login.html` - Fixed 4 instances
+2. ✅ `health/templates/register.html` - Fixed 1 instance
+3. ✅ `health/templates/edit_profile.html` - Fixed 2 instances
+4. ✅ `health/templates/sent_feedback.html` - Fixed 1 instance
+5. ✅ `health/templates/change_password.html` - Fixed 2 instances
+6. ✅ `health/templates/edit_doctor.html` - Fixed 2 instances
+7. ✅ `health/templates/edit_disease.html` - Fixed 2 instances
+8. ✅ `health/templates/admin_login.html` - Fixed 4 instances
+9. ✅ `health/templates/profile_doctor.html` - Fixed 1 instance
+10. ✅ `health/templates/add_doctor.html` - Fixed 1 instance
+11. ✅ `health/templates/search_doctor.html` - Fixed 3 instances (including nested conditions)
 
 ## Testing
 After this fix, the login page should work correctly:
@@ -51,3 +61,8 @@ After this fix, the login page should work correctly:
 - The `{% if variable == value %}` syntax is the modern Django template syntax
 - It's more readable and consistent with Python syntax
 - No other deprecated tags were found in the templates
+
+## Total Impact
+- **23 instances** of deprecated template tags fixed across **11 template files**
+- All pages should now work correctly: login, register, patient home, profile, feedback, admin, doctor management, etc.
+- Nested conditions in search_doctor.html replaced with `{% elif %}` for better readability

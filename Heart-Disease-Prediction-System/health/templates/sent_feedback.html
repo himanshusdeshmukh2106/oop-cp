@@ -1,12 +1,12 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block body %}
-{% ifequal terror "create" %}
+{% if terror == "create" %}
 <script>
     alert('Send Feedback Successfully');
     window.location="{% url 'sent_feedback' %}";
 </script>
-{% endifequal %}
+{% endif %}
 
 	<section class="logins py-5">
 		<div class="container py-xl-5 py-lg-3">

@@ -1,82 +1,102 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block body %}
-	<!-- register -->
-
-<center>
-
 	<section class="logins py-5">
 		<div class="container py-xl-5 py-lg-3">
-			<div class="title-section mb-md-5 mb-4">
-				<h6 class="w3ls-title-sub"></h6>
-				<br><br>
-				<h3 class="w3ls-title text-uppercase text-dark font-weight-bold">Add Heart Detail</h3>
-			</div><hr/>
-			<div class="login px-sm-12" style="width:100%">
-				<form action="" method="post" enctype="multipart/form-data">
-					{% csrf_token %}
-					<div class="form-group row">
-						<div class="col-md-2">
-						<label>Age</label>
-						<input type="text" class="form-control" name="age"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Sex</label>
-						<input type="text" class="form-control" name="sex"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Chest Pain</label>
-						<input type="text" class="form-control" name="cp"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Resting BP</label>
-						<input type="text" class="form-control" name="trestbps"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Cholestrol</label>
-						<input type="text" class="form-control" name="chole"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Fasting BS</label>
-						<input type="text" class="form-control" name="fbs"  required="">
-						</div>
-				</div>
-				<div class="form-group row">
-					<div class="col-md-2">
-						<label>ECG</label>
-						<input type="text" class="form-control" name="restecg"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Max Heart Rate</label>
-						<input type="text" class="form-control" name="thalach"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Exercise Induced</label>
-						<input type="text" class="form-control" name="exang"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Oldpeak</label>
-						<input type="text" class="form-control" name="old_peak"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Slope</label>
-						<input type="text" class="form-control" name="slope"  required="">
-						</div>
-					<div class="col-md-2">
-						<label>Cardiac Arrest</label>
-						<input type="text" class="form-control" name="ca"  required="">
-						</div>
-				</div>
-					<div class="col-md-2">
-						<label>Thalssemia</label>
-						<input type="text" class="form-control" name="thal"  required="">
-						</div>
+			<div class="title-section mb-md-5 mb-4 text-center fade-in">
+				<h3 class="w3ls-title text-uppercase font-weight-bold">Heart Disease Risk Assessment</h3>
+				<p class="mt-3" style="color: #64748b;">Enter your health parameters for analysis</p>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-lg-11">
+					<div class="dashboard-card fade-in">
+						<form action="" method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							<h5 class="mb-4" style="color: #6366f1; border-left: 4px solid #6366f1; padding-left: 1rem;">
+								<i class="fa fa-user mr-2"></i>Basic Information
+							</h5>
+							<div class="row mb-4">
+								<div class="col-md-4 mb-3">
+									<label>Age <small style="color: #94a3b8;">(years)</small></label>
+									<input type="number" class="form-control" name="age" placeholder="e.g., 45" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Sex <small style="color: #94a3b8;">(0: Female, 1: Male)</small></label>
+									<input type="number" class="form-control" name="sex" min="0" max="1" placeholder="0 or 1" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Chest Pain Type <small style="color: #94a3b8;">(0-3)</small></label>
+									<input type="number" class="form-control" name="cp" min="0" max="3" placeholder="0, 1, 2, or 3" required="">
+								</div>
+							</div>
 
-					<button type="submit" class="btn submit mt-4" style="background-color: #726f6e;">Send Heart data</button>
-				</form>
+							<h5 class="mb-4" style="color: #6366f1; border-left: 4px solid #6366f1; padding-left: 1rem;">
+								<i class="fa fa-heartbeat mr-2"></i>Vital Signs
+							</h5>
+							<div class="row mb-4">
+								<div class="col-md-4 mb-3">
+									<label>Resting Blood Pressure <small style="color: #94a3b8;">(mm Hg)</small></label>
+									<input type="number" class="form-control" name="trestbps" placeholder="e.g., 120" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Cholesterol <small style="color: #94a3b8;">(mg/dl)</small></label>
+									<input type="number" class="form-control" name="chole" placeholder="e.g., 200" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Fasting Blood Sugar <small style="color: #94a3b8;">(0: <120mg/dl, 1: >120mg/dl)</small></label>
+									<input type="number" class="form-control" name="fbs" min="0" max="1" placeholder="0 or 1" required="">
+								</div>
+							</div>
+
+							<h5 class="mb-4" style="color: #6366f1; border-left: 4px solid #6366f1; padding-left: 1rem;">
+								<i class="fa fa-stethoscope mr-2"></i>Diagnostic Tests
+							</h5>
+							<div class="row mb-4">
+								<div class="col-md-4 mb-3">
+									<label>Resting ECG <small style="color: #94a3b8;">(0-2)</small></label>
+									<input type="number" class="form-control" name="restecg" min="0" max="2" placeholder="0, 1, or 2" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Max Heart Rate <small style="color: #94a3b8;">(bpm)</small></label>
+									<input type="number" class="form-control" name="thalach" placeholder="e.g., 150" required="">
+								</div>
+								<div class="col-md-4 mb-3">
+									<label>Exercise Induced Angina <small style="color: #94a3b8;">(0: No, 1: Yes)</small></label>
+									<input type="number" class="form-control" name="exang" min="0" max="1" placeholder="0 or 1" required="">
+								</div>
+							</div>
+
+							<h5 class="mb-4" style="color: #6366f1; border-left: 4px solid #6366f1; padding-left: 1rem;">
+								<i class="fa fa-line-chart mr-2"></i>Additional Parameters
+							</h5>
+							<div class="row mb-4">
+								<div class="col-md-3 mb-3">
+									<label>ST Depression (Oldpeak)</label>
+									<input type="number" step="0.1" class="form-control" name="old_peak" placeholder="e.g., 1.5" required="">
+								</div>
+								<div class="col-md-3 mb-3">
+									<label>Slope <small style="color: #94a3b8;">(0-2)</small></label>
+									<input type="number" class="form-control" name="slope" min="0" max="2" placeholder="0, 1, or 2" required="">
+								</div>
+								<div class="col-md-3 mb-3">
+									<label>Major Vessels <small style="color: #94a3b8;">(0-3)</small></label>
+									<input type="number" class="form-control" name="ca" min="0" max="3" placeholder="0-3" required="">
+								</div>
+								<div class="col-md-3 mb-3">
+									<label>Thalassemia <small style="color: #94a3b8;">(0-3)</small></label>
+									<input type="number" class="form-control" name="thal" min="0" max="3" placeholder="0-3" required="">
+								</div>
+							</div>
+
+							<div class="text-center mt-4">
+								<button type="submit" class="btn submit" style="padding: 1rem 3rem; font-size: 1rem;">
+									<i class="fa fa-calculator mr-2"></i>Analyze Heart Health
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
-	<!-- //register -->
-</center>
 {% endblock %}
