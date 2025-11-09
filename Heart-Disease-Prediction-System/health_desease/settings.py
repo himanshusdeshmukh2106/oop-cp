@@ -11,37 +11,21 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Load environment variables from root directory
-root_env_path = BASE_DIR.parent / '.env'
-if root_env_path.exists():
-    load_dotenv(root_env_path)
-else:
-    # Try loading from current directory
-    load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', '#(b&+nu(!u((bkcqypjva6_7kn^2dx$*h&790s@^b3tugbuq95')
+SECRET_KEY = '#(b&+nu(!u((bkcqypjva6_7kn^2dx$*h&790s@^b3tugbuq95'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-# Google Maps API Key
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
-
-# Base URL for Twilio callbacks (use ngrok URL for local development with AI conversation)
-BASE_URL = os.getenv('BASE_URL', 'https://3ff15dbaf691.ngrok-free.app')
 
 
 # Application definition
@@ -81,7 +65,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'health_desease.context_processors.google_maps_key',
             ],
         },
     },
@@ -148,8 +131,4 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR,'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Add GOOGLE_MAPS_API_KEY to context processors
-TEMPLATES[0]['OPTIONS']['context_processors'].append('django.template.context_processors.request')
-TEMPLATES[0]['OPTIONS']['context_processors'].append('health_desease.context_processors.google_maps_key')
 
