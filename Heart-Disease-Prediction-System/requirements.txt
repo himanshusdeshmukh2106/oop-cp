@@ -15,6 +15,10 @@ numpy==1.26.4
 matplotlib==3.9.2
 seaborn==0.13.2
 
+# Image Processing (for ECG analysis)
+scikit-image==0.22.0
+natsort==8.4.0
+
 # Database
 # SQLite is built into Python, no need to install
 

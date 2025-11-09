@@ -51,3 +51,20 @@ class Feedback(models.Model):
 
     def __str__(self):
         return self.user.user.username
+
+
+class ECG_Prediction(models.Model):
+    """Store ECG image predictions"""
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    ecg_image = models.ImageField(upload_to='ecg_images/', null=True)
+    prediction_code = models.IntegerField(null=True)  # 0=Abnormal, 1=MI, 2=Normal, 3=History of MI
+    prediction_label = models.CharField(max_length=100, null=True)
+    prediction_message = models.TextField(null=True)
+    confidence = models.FloatField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    
+    def __str__(self):
+        return f"{self.patient.user.username} - {self.prediction_label}"
+    
+    class Meta:
+        ordering = ['-created']

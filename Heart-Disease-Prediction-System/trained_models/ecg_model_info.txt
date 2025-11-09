@@ -1,0 +1,18 @@
+ECG Model Information
+======================================================================
+
+total_samples: 928
+train_samples: 742
+test_samples: 186
+input_features: 3060
+pca_components: 150
+explained_variance: 0.9098600986073434
+voting_train_accuracy: 1.0
+voting_test_accuracy: 0.946236559139785
+individual_accuracies: {'Logistic Regression': 0.8763440860215054, 'Random Forest': 0.9354838709677419, 'Gradient Boosting': 0.9032258064516129, 'Decision Tree': 0.8387096774193549, 'KNN': 0.7741935483870968, 'Naive Bayes': 0.7365591397849462, 'SVC': 0.8602150537634409}
+best_individual_model: Random Forest
+best_individual_accuracy: 0.9354838709677419
+sklearn_version: 1.5.2
+uses_scaler: True
+n_classes: 4
+class_mapping: {0: 'Abnormal Heartbeat', 1: 'Myocardial Infarction', 2: 'Normal', 3: 'History of MI'}

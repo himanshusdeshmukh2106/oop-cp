@@ -174,9 +174,18 @@ $(document).ready(function() {
 							<ul class="menu" style="padding:15px;width:100%">
 								<li><a href="{% url 'patient_home' %}" class="active">Home</a></li>
 								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/add_heartdetail">Predict</a></li>
+								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/upload_ecg">ECG Analysis</a></li>
 								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/profile_doctor">My Detail</a></li>
 								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/sent_feedback">Feedback</a></li>
-								<li><a href="/view_search_pat">History</a></li>
+								<li>
+									<label for="drop-history" class="toggle toogle-history"> <span class="fa fa-angle-down" aria-hidden="true"></span>
+									</label>
+									<a href="#"> History <span class="fa fa-angle-down" aria-hidden="true"></span></a>
+									<ul style="margin-top:2%;width:40%;margin-right:0%">
+										<li style="width:100%;"><a href="/view_search_pat" class="drop-text">Prediction History</a></li>
+										<li style="width:100%;"><a href="/ecg_history" class="drop-text">ECG History</a></li>
+									</ul>
+								</li>
 							</ul>
 						</nav>
 					</div>

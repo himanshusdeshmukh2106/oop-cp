@@ -493,3 +493,79 @@ def sent_feedback(request):
         Feedback.objects.create(user=username, messages=message)
         terror = "create"
     return render(request, 'sent_feedback.html',{'terror':terror})
+
+
+@login_required(login_url='login')
+def upload_ecg(request):
+    """Upload ECG image for analysis"""
+    error = ""
+    if request.method == "POST" and request.FILES.get('ecg_image'):
+        try:
+            from .ecg_predictor import ECGPredictor
+            
+            # Get uploaded file
+            ecg_file = request.FILES['ecg_image']
+            
+            # Save temporarily
+            patient = Patient.objects.get(user=request.user)
+            ecg_record = ECG_Prediction.objects.create(
+                patient=patient,
+                ecg_image=ecg_file
+            )
+            
+            # Get file path
+            ecg_image_path = ecg_record.ecg_image.path
+            
+            # Process ECG
+            predictor = ECGPredictor()
+            result = predictor.predict_from_ecg_image(ecg_image_path)
+            
+            if result['success']:
+                # Update record with prediction
+                ecg_record.prediction_code = result['prediction_code']
+                ecg_record.prediction_label = result['prediction_label']
+                ecg_record.prediction_message = result['prediction_message']
+                ecg_record.confidence = result.get('confidence')
+                ecg_record.save()
+                
+                # Redirect to result page
+                return redirect('ecg_result', ecg_record.id)
+            else:
+                error = result.get('error', 'Failed to process ECG image')
+                ecg_record.delete()
+        
+        except Exception as e:
+            error = str(e)
+    
+    d = {'error': error}
+    return render(request, 'upload_ecg.html', d)
+
+@login_required(login_url='login')
+def ecg_result(request, ecg_id):
+    """Display ECG prediction result"""
+    try:
+        ecg_record = ECG_Prediction.objects.get(id=ecg_id, patient__user=request.user)
+        
+        # Get nearby doctors
+        patient = Patient.objects.get(user=request.user)
+        doctors = Doctor.objects.filter(address__icontains=patient.address, status=1)
+        
+        d = {
+            'ecg_record': ecg_record,
+            'doctors': doctors
+        }
+        return render(request, 'ecg_result.html', d)
+    
+    except ECG_Prediction.DoesNotExist:
+        return redirect('upload_ecg')
+
+@login_required(login_url='login')
+def ecg_history(request):
+    """View ECG prediction history"""
+    try:
+        patient = Patient.objects.get(user=request.user)
+        ecg_records = ECG_Prediction.objects.filter(patient=patient).order_by('-created')
+        d = {'ecg_records': ecg_records}
+        return render(request, 'ecg_history.html', d)
+    except:
+        return redirect('user_home')

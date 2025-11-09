@@ -1,0 +1,99 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-heartbeat"></i> ECG Image Analysis</h3>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> {{ error }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> How it works:</h5>
+                        <ol>
+                            <li>Upload a clear 12-lead ECG image (paper ECG scan)</li>
+                            <li>Our AI will analyze the ECG waveforms</li>
+                            <li>Get instant diagnosis in 4 categories:
+                                <ul>
+                                    <li><strong>Normal</strong> - Healthy heart</li>
+                                    <li><strong>Myocardial Infarction</strong> - Heart attack</li>
+                                    <li><strong>Abnormal Heartbeat</strong> - Arrhythmia</li>
+                                    <li><strong>History of MI</strong> - Previous heart attack</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="ecg_image"><strong>Upload ECG Image:</strong></label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="ecg_image" name="ecg_image" 
+                                       accept="image/*" required onchange="previewImage(event)">
+                                <label class="custom-file-label" for="ecg_image">Choose ECG image...</label>
+                            </div>
+                            <small class="form-text text-muted">
+                                Supported formats: JPG, PNG, BMP. Max size: 10MB
+                            </small>
+                        </div>
+                        
+                        <div class="form-group" id="imagePreview" style="display:none;">
+                            <label><strong>Preview:</strong></label>
+                            <div class="text-center">
+                                <img id="preview" src="" alt="ECG Preview" class="img-fluid border rounded" style="max-height: 400px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <i class="fas fa-upload"></i> Analyze ECG
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <a href="{% url 'ecg_history' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-history"></i> View ECG History
+                        </a>
+                        <a href="{% url 'patient_home' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+        
+        // Update label
+        document.querySelector('.custom-file-label').textContent = file.name;
+    }
+}
+</script>
+{% endblock %}

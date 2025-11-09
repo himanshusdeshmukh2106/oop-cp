@@ -56,5 +56,10 @@ urlpatterns = [
     path('delete_patient<int:pid>', delete_patient, name="delete_patient"),
     path('delete_feedback<int:pid>', delete_feedback, name="delete_feedback"),
     path('predict_desease/<str:pred>/<str:accuracy>/', predict_desease, name="predict_desease"),
+    
+    # ECG Prediction URLs
+    path('upload_ecg', upload_ecg, name="upload_ecg"),
+    path('ecg_result/<int:ecg_id>/', ecg_result, name="ecg_result"),
+    path('ecg_history', ecg_history, name="ecg_history"),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
