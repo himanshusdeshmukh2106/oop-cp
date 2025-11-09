@@ -25,6 +25,7 @@ natsort==8.4.0
 # Utilities
 Pillow==10.2.0  # For image handling
 python-dateutil==2.8.2
+python-dotenv==1.0.0  # For environment variables
 
 # Optional: For better performance
 joblib==1.4.2  # For model serialization

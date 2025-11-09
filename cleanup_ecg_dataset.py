@@ -149,3 +149,4 @@ print("  🗑️  Documentation and presentations")
 print("  🗑️  Old incompatible models")
 print("  🗑️  Unnecessary directories")
 print(f"\nTotal saved: ~{total_removed:.1f} MB")
+

@@ -61,5 +61,16 @@ urlpatterns = [
     path('upload_ecg', upload_ecg, name="upload_ecg"),
     path('ecg_result/<int:ecg_id>/', ecg_result, name="ecg_result"),
     path('ecg_history', ecg_history, name="ecg_history"),
+    
+    # Doctor Finder & Appointments
+    path('find_doctors', find_doctors, name="find_doctors"),
+    path('book_appointment/<int:doctor_id>/', book_appointment, name="book_appointment"),
+    path('my_appointments', my_appointments, name="my_appointments"),
+    path('cancel_appointment/<int:appointment_id>/', cancel_appointment, name="cancel_appointment"),
+    
+    # AI Calling Agent
+    path('ai_book_appointment', ai_book_appointment, name="ai_book_appointment"),
+    path('ai_call_handler/', ai_call_handler, name="ai_call_handler"),
+    path('call_status/', call_status, name="call_status"),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

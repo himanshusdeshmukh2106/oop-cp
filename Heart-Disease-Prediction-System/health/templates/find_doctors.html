@@ -1,0 +1,662 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block body %}
+<div class="page-shell">
+    <div class="container">
+        {% csrf_token %}
+
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-2" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <section class="section-intro text-center mb-5 fade-in">
+            <span class="section-badge"><i class="fas fa-heartbeat"></i> Personalized care</span>
+            <h2 class="section-heading">Find Cardiac Experts Near You</h2>
+            <p class="section-subtitle">Discover cardiologists and cardiac hospitals close to you, compare appointments, and choose the care option that fits your needs.</p>
+        </section>
+
+        <div class="search-card fade-in">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between mb-4">
+                <div>
+                    <h4 class="mb-1">Search by location</h4>
+                    <p class="text-muted mb-0">Use your current location or enter a city to explore trusted cardiac specialists.</p>
+                </div>
+            </div>
+            <div class="input-group input-group-lg flex-lg-nowrap">
+                <input type="text" id="searchLocation" class="form-control shadow-sm"
+                       placeholder="Enter your location (e.g., Mumbai, Maharashtra)"
+                       value="{{ patient_address }}">
+                <div class="input-group-append d-flex flex-column flex-lg-row mt-3 mt-lg-0">
+                    <button class="btn btn-primary mr-lg-2 mb-2 mb-lg-0" type="button" onclick="searchNearbyDoctors()">
+                        <i class="fas fa-search"></i> Find Nearby Doctors
+                    </button>
+                    <button class="btn btn-outline-info" type="button" onclick="useMyLocation()">
+                        <i class="fas fa-location-arrow"></i> Use My Location
+                    </button>
+                </div>
+            </div>
+            <small class="d-block mt-3 text-muted">We’ll search for cardiologists and cardiac hospitals near you.</small>
+        </div>
+
+        <div class="map-card mt-4 fade-in">
+            <div id="map"></div>
+        </div>
+
+        <div id="nearbyResults" class="nearby-results fade-in" style="display: none;">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between mb-3">
+                <h4 class="mb-2 mb-md-0"><i class="fas fa-map-marker-alt text-primary"></i> Nearby Cardiac Doctors & Hospitals</h4>
+                <small class="text-muted">Showing open facilities within a 5 km radius of your selected location.</small>
+            </div>
+            <div id="nearbyPlacesList" class="row"></div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mt-5 mb-4">
+            <div>
+                <h4 class="mb-1"><i class="fas fa-hospital text-primary"></i> Registered Cardiac Specialists</h4>
+                <p class="text-muted mb-0">Book appointments with pre-verified cardiologists and cardiac hospitals.</p>
+            </div>
+            <a href="{% url 'patient_home' %}" class="btn btn-outline-primary mt-3 mt-md-0">
+                <i class="fas fa-home"></i> Patient Dashboard
+            </a>
+        </div>
+
+        {% if doctors %}
+        <div class="doctor-grid row">
+            {% for doctor in doctors %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="doctor-card h-100 fade-in" data-marker-index="{{ forloop.counter0 }}">
+                    <div class="d-flex align-items-center mb-4">
+                        {% if doctor.image %}
+                        <img src="{{ doctor.image.url }}" alt="Doctor" class="mr-3" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.12);">
+                        {% else %}
+                        <div class="doctor-avatar mr-3">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
+                            <small class="text-muted text-uppercase">{{ doctor.specialization|default:"Cardiologist" }}</small>
+                        </div>
+                    </div>
+                    <div class="doctor-meta mb-4">
+                        <p class="mb-2"><i class="fas fa-hospital text-primary mr-2"></i><strong>Hospital:</strong> {{ doctor.hospital_name|default:"Private Practice" }}</p>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt text-primary mr-2"></i><strong>Address:</strong> {{ doctor.address }}</p>
+                        <p class="mb-0"><i class="fas fa-phone text-primary mr-2"></i><strong>Contact:</strong> {{ doctor.contact }}</p>
+                    </div>
+                    <div class="card-actions mt-auto">
+                        <a href="{% url 'book_appointment' doctor.id %}" class="btn btn-primary btn-block">
+                            <i class="fas fa-calendar-plus"></i> Book Appointment
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state text-center fade-in">
+            <h5><i class="fas fa-info-circle"></i> No Doctors Available</h5>
+            <p>There are currently no cardiac specialists registered in the system.</p>
+            <div class="card-actions justify-content-center mt-3">
+                <a href="{% url 'patient_home' %}" class="btn btn-outline-primary"><i class="fas fa-home"></i> Patient Dashboard</a>
+                <a href="{% url 'my_appointments' %}" class="btn btn-primary"><i class="fas fa-calendar"></i> My Appointments</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card-actions justify-content-center mt-4">
+            <a href="{% url 'patient_home' %}" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            <a href="{% url 'my_appointments' %}" class="btn btn-primary"><i class="fas fa-calendar"></i> My Appointments</a>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Options Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">
+                    <i class="fas fa-calendar-plus"></i> Book Appointment
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6 class="font-weight-bold" id="modalHospitalName"></h6>
+                    <p class="text-muted mb-1" id="modalHospitalAddress"></p>
+                    <p class="mb-0"><i class="fas fa-phone text-primary"></i> <span id="modalHospitalPhone"></span></p>
+                </div>
+                <hr>
+                <p class="mb-3">Choose how you'd like to book your appointment:</p>
+                
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <button class="btn btn-primary btn-lg btn-block" onclick="confirmAIBooking()">
+                            <i class="fas fa-robot"></i> Let AI Agent Call & Book
+                            <br><small class="d-block mt-1">Recommended - AI will call and schedule for you</small>
+                        </button>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-outline-secondary btn-lg btn-block" onclick="confirmManualCall()">
+                            <i class="fas fa-phone"></i> Call Manually
+                            <br><small class="d-block mt-1">You'll be connected to call directly</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mb-0">Fetching phone number...</p>
+                <button type="button" class="btn btn-sm btn-secondary mt-3" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Doctor data from Django
+var doctors = JSON.parse('{{ doctors_json|escapejs }}');
+var map;
+var markers = [];
+var infoWindows = [];
+var placesService;
+var geocoder;
+var userLocation = null;
+
+function initMap() {
+    // Default center (India)
+    var defaultCenter = {lat: 20.5937, lng: 78.9629};
+    
+    // Initialize map
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 5,
+        center: defaultCenter,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+        styles: [
+            {
+                featureType: "poi.medical",
+                elementType: "geometry",
+                stylers: [{ color: "#dbeafe" }]
+            }
+        ]
+    });
+    
+    // Bounds to fit all markers
+    var bounds = new google.maps.LatLngBounds();
+    var hasValidMarkers = false;
+    
+    // Add markers for each doctor
+    doctors.forEach(function(doctor, index) {
+        if (doctor.latitude && doctor.longitude && doctor.latitude !== 0 && doctor.longitude !== 0) {
+            var position = {lat: doctor.latitude, lng: doctor.longitude};
+            
+            // Create marker
+            var marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: doctor.name,
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/ltblue-dot.png',
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            });
+            
+            // Create info window
+            var infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="min-width: 240px; padding: 14px; font-family: 'Inter', sans-serif;">
+                        <h6 style="margin-bottom: 10px; color: #1d4ed8; font-weight: 600;">
+                            <i class="fas fa-user-md" style="color: #2563eb;"></i> ${doctor.name}
+                        </h6>
+                        <p style="margin-bottom: 6px; font-weight: 600; color: #1e293b;">${doctor.hospital}</p>
+                        <p style="margin-bottom: 6px; font-size: 13px; color: #475569;">${doctor.address}</p>
+                        <p style="margin-bottom: 12px; font-size: 13px; color: #0f172a;">
+                            <i class="fas fa-phone" style="color: #0ea5e9;"></i> ${doctor.contact}
+                        </p>
+                        <a href="/book_appointment/${doctor.id}/" class="btn btn-sm btn-primary btn-block" style="border-radius: 999px;">
+                            <i class="fas fa-calendar-plus"></i> Book Appointment
+                        </a>
+                    </div>
+                `
+            });
+            
+            // Add click listener
+            marker.addListener('click', function() {
+                // Close all other info windows
+                infoWindows.forEach(function(iw) {
+                    iw.close();
+                });
+                infoWindow.open(map, marker);
+            });
+            
+            markers.push(marker);
+            infoWindows.push(infoWindow);
+            bounds.extend(position);
+            hasValidMarkers = true;
+        }
+    });
+    
+    // Fit map to show all markers
+    if (hasValidMarkers) {
+        map.fitBounds(bounds);
+        
+        // Prevent too much zoom for single marker
+        google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
+            if (map.getZoom() > 15) {
+                map.setZoom(15);
+            }
+        });
+    }
+    
+    // Initialize Places service and Geocoder
+    placesService = new google.maps.places.PlacesService(map);
+    geocoder = new google.maps.Geocoder();
+    
+    // Try to get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            
+            // Add user location marker
+            new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: 'Your Location',
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            });
+            
+            // If no doctor markers, center on user
+            if (!hasValidMarkers) {
+                map.setCenter(userLocation);
+                map.setZoom(12);
+            }
+        });
+    }
+}
+
+function useMyLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            
+            map.setCenter(userLocation);
+            map.setZoom(13);
+            
+            // Search nearby
+            searchNearbyDoctorsAtLocation(userLocation);
+        }, function(error) {
+            alert('Unable to get your location. Please enter your location manually.');
+        });
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+}
+
+function searchNearbyDoctors() {
+    var location = document.getElementById('searchLocation').value;
+    
+    if (!location) {
+        alert('Please enter a location');
+        return;
+    }
+    
+    // Geocode the location
+    geocoder.geocode({ 'address': location }, function(results, status) {
+        if (status === 'OK') {
+            var location = results[0].geometry.location;
+            map.setCenter(location);
+            map.setZoom(13);
+            
+            // Search nearby
+            searchNearbyDoctorsAtLocation(location);
+        } else {
+            alert('Location not found. Please try a different address.');
+        }
+    });
+}
+
+function searchNearbyDoctorsAtLocation(location) {
+    // Clear previous nearby markers
+    markers.forEach(function(marker) {
+        if (marker.nearbyPlace) {
+            marker.setMap(null);
+        }
+    });
+    
+    // Search for cardiologists
+    var request = {
+        location: location,
+        radius: 5000, // 5km radius
+        keyword: 'cardiologist heart doctor cardiac',
+        type: 'doctor'
+    };
+    
+    placesService.nearbySearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            displayNearbyPlaces(results, 'Cardiologists');
+        }
+    });
+    
+    // Also search for hospitals
+    var hospitalRequest = {
+        location: location,
+        radius: 5000,
+        keyword: 'cardiac hospital heart hospital cardiology',
+        type: 'hospital'
+    };
+    
+    placesService.nearbySearch(hospitalRequest, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+            displayNearbyPlaces(results, 'Cardiac Hospitals', true);
+        }
+    });
+}
+
+function displayNearbyPlaces(places, category, append = false) {
+    var resultsDiv = document.getElementById('nearbyResults');
+    var listDiv = document.getElementById('nearbyPlacesList');
+    
+    if (!append) {
+        listDiv.innerHTML = '';
+    }
+    
+    resultsDiv.style.display = 'block';
+    
+    // Filter only open places
+    var openPlaces = places.filter(function(place) {
+        return !place.opening_hours || place.opening_hours.open_now;
+    });
+    
+    // Limit to 6 nearest places
+    var limitedPlaces = openPlaces.slice(0, 6);
+    
+    if (limitedPlaces.length === 0) {
+        listDiv.innerHTML += '<div class="col-12"><div class="alert alert-warning">No open cardiac facilities found nearby. Try expanding your search area.</div></div>';
+        return;
+    }
+    
+    limitedPlaces.forEach(function(place) {
+        // Add marker
+        var marker = new google.maps.Marker({
+            position: place.geometry.location,
+            map: map,
+            title: place.name,
+            icon: {
+                url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                scaledSize: new google.maps.Size(35, 35)
+            }
+        });
+        marker.nearbyPlace = true;
+        
+        // Create info window
+        var rating = place.rating ? `⭐ ${place.rating}` : 'No rating';
+        var infoWindow = new google.maps.InfoWindow({
+            content: `
+                <div style="min-width: 240px; padding: 14px; font-family: 'Inter', sans-serif;">
+                    <h6 style="margin-bottom: 10px; color: #0f172a; font-weight: 600;">
+                        <i class="fas fa-hospital" style="color: #0ea5e9;"></i> ${place.name}
+                    </h6>
+                    <p style="margin-bottom: 6px; font-size: 13px; color: #475569;">${rating}</p>
+                    <p style="margin-bottom: 6px; font-size: 13px; color: #475569;">${place.vicinity}</p>
+                    <p style="margin-bottom: 12px; color: #15803d; font-size: 13px;">🟢 Open Now</p>
+                    <button onclick="bookExternalAppointment('${place.name.replace(/'/g, "\\'")}', '${place.vicinity.replace(/'/g, "\\'")}', '', '${place.place_id}')" 
+                            class="btn btn-sm btn-primary btn-block" style="border-radius: 999px; margin-top: 4px;">
+                        <i class="fas fa-calendar-plus"></i> Book Appointment
+                    </button>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${place.geometry.location.lat()},${place.geometry.location.lng()}&query_place_id=${place.place_id}" 
+                       target="_blank" class="btn btn-sm btn-outline-secondary btn-block" style="margin-top: 6px; border-radius: 999px;">
+                        <i class="fas fa-directions"></i> Directions
+                    </a>
+                </div>
+            `
+        });
+        
+        marker.addListener('click', function() {
+            infoWindows.forEach(function(iw) {
+                iw.close();
+            });
+            infoWindow.open(map, marker);
+        });
+        
+        markers.push(marker);
+        infoWindows.push(infoWindow);
+        
+        // Add to list
+        var card = `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="nearby-card h-100">
+                    <h6 class="text-primary mb-2">${place.name}</h6>
+                    <p class="mb-1"><small>${rating}</small></p>
+                    <p class="mb-2"><small class="text-muted"><i class="fas fa-map-marker-alt"></i> ${place.vicinity}</small></p>
+                    <p class="mb-3"><small class="text-success font-weight-bold">🟢 Open Now</small></p>
+                    <button onclick="bookExternalAppointment('${place.name.replace(/'/g, "\\'")}', '${place.vicinity.replace(/'/g, "\\'")}', '', '${place.place_id}')" 
+                            class="btn btn-primary btn-block">
+                        <i class="fas fa-calendar-plus"></i> Book Appointment
+                    </button>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${place.geometry.location.lat()},${place.geometry.location.lng()}&query_place_id=${place.place_id}" 
+                       target="_blank" class="btn btn-outline-secondary btn-block mt-2">
+                        <i class="fas fa-directions"></i> Get Directions
+                    </a>
+                </div>
+            </div>
+        `;
+        listDiv.innerHTML += card;
+    });
+}
+
+// Store current booking details
+var currentBooking = {
+    name: '',
+    address: '',
+    phone: '',
+    placeId: ''
+};
+
+// Function to book appointment at external facility
+function bookExternalAppointment(name, address, phone, placeId) {
+    console.log('bookExternalAppointment called:', {name, address, phone, placeId});
+    
+    // Store booking details
+    currentBooking = {
+        name: name,
+        address: address,
+        phone: phone || 'N/A',
+        placeId: placeId
+    };
+    
+    // If phone is not available AND we have a placeId, try to fetch it
+    if ((!phone || phone === 'N/A' || phone === '') && placeId && placeId !== '') {
+        console.log('Fetching phone number for place:', placeId);
+        // Show loading modal
+        $('#loadingModal').modal('show');
+        
+        // Set timeout to hide loading modal after 5 seconds
+        var timeoutId = setTimeout(function() {
+            console.log('Timeout reached, hiding loading modal');
+            $('#loadingModal').modal('hide');
+            showBookingModal();
+        }, 5000);
+        
+        // Fetch place details to get phone number
+        var request = {
+            placeId: placeId,
+            fields: ['formatted_phone_number', 'international_phone_number']
+        };
+        
+        placesService.getDetails(request, function(place, status) {
+            console.log('Place details response:', status, place);
+            clearTimeout(timeoutId); // Cancel timeout
+            $('#loadingModal').modal('hide');
+            
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                if (place.formatted_phone_number) {
+                    currentBooking.phone = place.formatted_phone_number;
+                    console.log('Found phone:', place.formatted_phone_number);
+                } else if (place.international_phone_number) {
+                    currentBooking.phone = place.international_phone_number;
+                    console.log('Found international phone:', place.international_phone_number);
+                }
+            } else {
+                console.log('Failed to get place details:', status);
+            }
+            
+            // Show booking modal
+            showBookingModal();
+        });
+    } else {
+        // Show booking modal directly
+        console.log('Showing modal directly with phone:', phone);
+        showBookingModal();
+    }
+}
+
+// Show booking modal with current booking details
+function showBookingModal() {
+    console.log('showBookingModal called with:', currentBooking);
+    
+    // Make sure loading modal is hidden first
+    $('#loadingModal').modal('hide');
+    
+    // Small delay to ensure loading modal is fully hidden
+    setTimeout(function() {
+        document.getElementById('modalHospitalName').textContent = currentBooking.name;
+        document.getElementById('modalHospitalAddress').textContent = currentBooking.address;
+        document.getElementById('modalHospitalPhone').textContent = currentBooking.phone;
+        
+        console.log('Attempting to show modal...');
+        $('#bookingModal').modal('show');
+    }, 300);
+}
+
+// Confirm AI booking
+function confirmAIBooking() {
+    $('#bookingModal').modal('hide');
+    
+    if (!currentBooking.phone || currentBooking.phone === 'N/A') {
+        alert('Phone number not available for AI booking. Please try calling manually or visit the location.');
+        return;
+    }
+    
+    aiBookAppointment(currentBooking.name, currentBooking.address, currentBooking.phone);
+}
+
+// Confirm manual call
+function confirmManualCall() {
+    $('#bookingModal').modal('hide');
+    
+    if (currentBooking.phone && currentBooking.phone !== 'N/A') {
+        window.location.href = 'tel:' + currentBooking.phone;
+    } else {
+        alert('Phone number not available. Please visit the location or search online for contact details.');
+    }
+}
+
+// Function to use AI agent for booking
+function aiBookAppointment(name, address, phone) {
+    if (!phone || phone === 'N/A') {
+        alert('Phone number not available for AI booking.');
+        return;
+    }
+    
+    // Create form and submit
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/ai_book_appointment';
+    
+    // Add CSRF token
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfToken) {
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken.value;
+        form.appendChild(csrfInput);
+    }
+    
+    // Add hospital details
+    var fields = {
+        'hospital_name': name,
+        'hospital_phone': phone,
+        'hospital_address': address
+    };
+    
+    for (var key in fields) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Add click event to cards to show marker
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-marker-index]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') {
+                return;
+            }
+
+            var markerIndex = parseInt(card.getAttribute('data-marker-index'), 10);
+            if (!isNaN(markerIndex) && markers[markerIndex]) {
+                infoWindows.forEach(function(iw) {
+                    iw.close();
+                });
+                infoWindows[markerIndex].open(map, markers[markerIndex]);
+                map.setCenter(markers[markerIndex].getPosition());
+                map.setZoom(15);
+                markers[markerIndex].setAnimation(google.maps.Animation.BOUNCE);
+                setTimeout(function() {
+                    markers[markerIndex].setAnimation(null);
+                }, 2000);
+            }
+        });
+    });
+});
+</script>
+
+<!-- Bootstrap JS for modals -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Google Maps API with Places library -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
+
+{% endblock %}
