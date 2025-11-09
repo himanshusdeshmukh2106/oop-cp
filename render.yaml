@@ -6,4 +6,4 @@ services:
     startCommand: "cd Heart-Disease-Prediction-System && gunicorn health_desease.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.9
