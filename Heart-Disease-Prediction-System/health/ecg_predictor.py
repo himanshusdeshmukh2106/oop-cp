@@ -58,17 +58,32 @@ class ECGPredictor:
             numpy array of image (RGB format)
         """
         image = imread(image_path)
-        # If image is grayscale (2D), convert to RGB (3D)
+        
+        # Handle different image formats
         if len(image.shape) == 2:
-            # Convert grayscale to RGB by stacking
+            # Grayscale (2D) - convert to RGB (3D)
             image = np.stack([image, image, image], axis=-1)
+        elif len(image.shape) == 3:
+            # Check number of channels
+            if image.shape[2] == 4:
+                # RGBA (4 channels) - convert to RGB (3 channels)
+                # Remove alpha channel
+                image = image[:, :, :3]
+            elif image.shape[2] == 2:
+                # 2 channels (grayscale + alpha) - use first channel and convert to RGB
+                image = np.stack([image[:, :, 0], image[:, :, 0], image[:, :, 0]], axis=-1)
+            elif image.shape[2] == 1:
+                # Single channel - convert to RGB
+                image = np.concatenate([image, image, image], axis=-1)
+            # If already 3 channels (RGB), keep as is
+        
         return image
     
     def gray_image(self, image):
         """
         Convert image to grayscale and resize
         Args:
-            image: RGB or grayscale image array
+            image: RGB, RGBA, or grayscale image array
         Returns:
             Grayscale image resized to standard dimensions
         """
@@ -76,6 +91,17 @@ class ECGPredictor:
         if len(image.shape) == 2:
             image_gray = image
         else:
+            # Handle different channel formats
+            if image.shape[2] == 4:
+                # RGBA (4 channels) - remove alpha channel first
+                image = image[:, :, :3]
+            elif image.shape[2] == 2:
+                # 2 channels (grayscale + alpha) - use first channel only
+                image = np.stack([image[:, :, 0], image[:, :, 0], image[:, :, 0]], axis=-1)
+            elif image.shape[2] == 1:
+                # Single channel - convert to RGB
+                image = np.concatenate([image, image, image], axis=-1)
+            # Convert to grayscale
             image_gray = color.rgb2gray(image)
         
         image_gray = resize(image_gray, (1572, 2213))
@@ -132,6 +158,16 @@ class ECGPredictor:
                 if len(y.shape) == 2:
                     grayscale = y  # Already grayscale
                 else:
+                    # Handle different channel formats
+                    if y.shape[2] == 4:
+                        # RGBA (4 channels) - remove alpha channel
+                        y = y[:, :, :3]
+                    elif y.shape[2] == 2:
+                        # 2 channels (grayscale + alpha) - use first channel only
+                        y = np.stack([y[:, :, 0], y[:, :, 0], y[:, :, 0]], axis=-1)
+                    elif y.shape[2] == 1:
+                        # Single channel - convert to RGB
+                        y = np.concatenate([y, y, y], axis=-1)
                     grayscale = color.rgb2gray(y)
                 
                 # Apply gaussian smoothing

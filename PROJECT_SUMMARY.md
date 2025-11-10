@@ -182,9 +182,9 @@ oop-cp/
 4. Builds and deploys automatically
 
 ### Environment Variables
-- `SECRET_KEY`: Django secret (auto-generated)
+- `SECRET_KEY`: Django secret (configure in .env)
 - `DEBUG`: False (production)
-- `ALLOWED_HOSTS`: Your Render URL
+- `ALLOWED_HOSTS`: Your deployment URL
 
 ### Build Process
 ```bash

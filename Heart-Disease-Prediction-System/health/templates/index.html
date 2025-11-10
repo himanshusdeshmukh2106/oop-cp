@@ -33,11 +33,93 @@
 	<link href="//fonts.googleapis.com/css?family=Quicksand:300,400,500,700" rel="stylesheet">
 	<link href="//fonts.googleapis.com/css?family=Mukta:200,300,400,500,600,700,800&amp;subset=devanagari,latin-ext" rel="stylesheet">
 	<link href="//fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>	<!-- //Web-Fonts -->
+<style>
+/* Navigation Enhancements */
+.nav_w3ls .menu a:hover {
+	background: rgba(255,255,255,0.15) !important;
+	transform: translateY(-2px);
+}
+
+.dropdown-nav:hover .dropdown-menu {
+	display: block !important;
+	animation: fadeIn 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+	background: #f3f4f6 !important;
+	padding-left: 24px !important;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Mobile Menu Toggle */
+.toggle {
+	display: none;
+}
+
+@media (max-width: 991px) {
+	.toggle {
+		display: block !important;
+	}
+	
+	.nav_w3ls .menu {
+		display: none;
+		flex-direction: column !important;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		padding: 20px !important;
+		border-radius: 8px;
+		box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+		min-width: 250px;
+		z-index: 1000;
+	}
+	
+	.nav_w3ls input[type="checkbox"]:checked ~ .menu {
+		display: flex !important;
+	}
+	
+	.nav_w3ls .menu li {
+		margin: 8px 0 !important;
+		width: 100%;
+	}
+	
+	.nav_w3ls .menu a {
+		display: block;
+		width: 100%;
+	}
+	
+	.dropdown-menu {
+		position: static !important;
+		box-shadow: none !important;
+		background: rgba(255,255,255,0.1) !important;
+		margin-top: 8px !important;
+	}
+	
+	.dropdown-menu a {
+		color: white !important;
+	}
+}
+
+/* Smooth transitions */
+* {
+	transition: all 0.3s ease;
+}
+
 .li2{
 	border:1px solid red;
 	padding:8px;
-	}
+}
 </style>
 
 <link rel='stylesheet' type='text/css' href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
@@ -100,183 +182,248 @@ $(document).ready(function() {
 		<!-- //top header -->
 
 		<!-- second header -->
-		<div class="main-top">
+		<div class="main-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
 			<div class="container-fluid">
-				<div class="header d-md-flex justify-content-between align-items-center py-3">
+				<div class="header d-flex justify-content-between align-items-center py-3 px-4">
 					<!-- logo -->
-					<div id="logo" style="margin-left:13%">
-						<h1>
-							<a href="index.html">
-								<span class="fa fa-user-md mr-2"></span>
-								<span class="logo-sp">Heart Disease</span> Prediction
+					<div id="logo">
+						<h1 style="margin: 0;">
+							<a href="{% url 'home' %}" style="text-decoration: none; color: white; display: flex; align-items: center; font-size: 1.5rem; font-weight: 700;">
+								<span class="fa fa-heartbeat mr-3" style="font-size: 2rem; color: #fff;"></span>
+								<span style="letter-spacing: 0.5px;">Heart Disease Prediction</span>
 							</a>
 						</h1>
 					</div>
 					<!-- //logo -->
 					<!-- nav -->
 					{% if request.user.is_staff %}
-					<div class="nav_w3ls" style="margin-right:4%">
+					<div class="nav_w3ls d-flex align-items-center">
 						<nav>
-							<label for="drop1" class="toggle">Menu</label>
+							<label for="drop1" class="toggle" style="color: white; cursor: pointer; font-size: 1.5rem;">
+								<i class="fa fa-bars"></i>
+							</label>
 							<input type="checkbox" id="drop1" />
-							<ul class="menu" style="padding:15px;width:100%">
-
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="{% url 'admin_home' %}" >Home</a></li>
-
-								<li>
-									<label for="drop-2" class="toggle toogle-2"> <span class="fa fa-angle-down" aria-hidden="true"></span>
+							<ul class="menu d-flex align-items-center" style="margin: 0; padding: 0; list-style: none;">
+								<li style="margin: 0 15px;">
+									<a href="{% url 'admin_home' %}" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-home mr-2"></i>Dashboard
+									</a>
+								</li>
+								<li style="margin: 0 15px; position: relative;" class="dropdown-nav">
+									<label for="drop-2" class="toggle toogle-2" style="display: none;">
+										<span class="fa fa-angle-down"></span>
 									</label>
-									<a href="#"> Doctor <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:2%;width:40%;margin-right:0%">
-										<li style="width:100%;"><a href="/add_doctor" class="drop-text">Add Doctor</a></li>
-										<li style="width:100%;"><a href="/view_doctor" class="drop-text">View Doctor</a></li>
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-user-md mr-2"></i>Doctors <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; left: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="/add_doctor" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-plus-circle mr-2"></i>Add Doctor
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="/view_doctor" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-list mr-2"></i>View Doctors
+											</a>
+										</li>
 									</ul>
 								</li>
-
-
-
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/view_patient">Patient</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2">
-									<a href="/view_search_pat">Searched Data</a></li>
-								<li><a href="/view_feedback">Feedback</a></li>
-
-							</ul>
-						</nav>
-					</div>
-					<div class="nav_w3ls" style="margin-right:3%">
-
-						<nav>
-							<label for="drop2" class="toggle">Menu</label>
-							<input type="checkbox" id="drop2" />
-							<ul class="menu">
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2" style="background:red;padding:8px">
-									<!-- First Tier Drop Down -->
-									<label for="drop-2" class="toggle toogle-2"> <span class="fa fa-angle-down" aria-hidden="true"></span>
-									</label>
-									<a href="#"><i class="fa fa-user"></i> {{request.user.username}} <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:10%;width:80%;margin-right:5%">
-										<li style="width:100%;"><a href="{% url 'change_password' %}" class="drop-text">Password</a></li>
-										<li style="width:100%;"><a href="{% url 'logout' %}" class="drop-text">Logout</a></li>
+								<li style="margin: 0 15px;">
+									<a href="/view_patient" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-users mr-2"></i>Patients
+									</a>
+								</li>
+								<li style="margin: 0 15px;">
+									<a href="/view_search_pat" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-database mr-2"></i>Data
+									</a>
+								</li>
+								<li style="margin: 0 15px;">
+									<a href="/view_feedback" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-comments mr-2"></i>Feedback
+									</a>
+								</li>
+								<li style="margin: 0 15px; position: relative;" class="dropdown-nav">
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.2); transition: all 0.3s;">
+										<i class="fa fa-user-circle mr-2"></i>{{request.user.username}} <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="{% url 'change_password' %}" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-key mr-2"></i>Change Password
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="{% url 'logout' %}" style="display: block; padding: 10px 20px; color: #dc3545; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-sign-out mr-2"></i>Logout
+											</a>
+										</li>
 									</ul>
 								</li>
-
-
-
 							</ul>
 						</nav>
 					</div>
 
 					{% elif request.user.patient_set.all.0 %}
-					<div class="nav_w3ls" style="margin-left:5%;font-weight:bold">
+					<div class="nav_w3ls d-flex align-items-center">
 						<nav>
-							<label for="drop3" class="toggle">Menu</label>
+							<label for="drop3" class="toggle" style="color: white; cursor: pointer; font-size: 1.5rem;">
+								<i class="fa fa-bars"></i>
+							</label>
 							<input type="checkbox" id="drop3" />
-							<ul class="menu" style="padding:15px;width:100%">
-								<li><a href="{% url 'patient_home' %}" class="active">Home</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/add_heartdetail">Predict</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/upload_ecg">ECG Analysis</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/profile_doctor">My Detail</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2"><a href="/sent_feedback">Feedback</a></li>
-								<li>
-									<label for="drop-history" class="toggle toogle-history"> <span class="fa fa-angle-down" aria-hidden="true"></span>
-									</label>
-									<a href="#"> History <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:2%;width:40%;margin-right:0%">
-										<li style="width:100%;"><a href="/view_search_pat" class="drop-text">Prediction History</a></li>
-										<li style="width:100%;"><a href="/ecg_history" class="drop-text">ECG History</a></li>
+							<ul class="menu d-flex align-items-center" style="margin: 0; padding: 0; list-style: none;">
+								<li style="margin: 0 12px;">
+									<a href="{% url 'patient_home' %}" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-home mr-2"></i>Home
+									</a>
+								</li>
+								<li style="margin: 0 12px;">
+									<a href="/add_heartdetail" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.15); transition: all 0.3s;">
+										<i class="fa fa-heartbeat mr-2"></i>Predict
+									</a>
+								</li>
+								<li style="margin: 0 12px;">
+									<a href="/upload_ecg" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-wave-square mr-2"></i>ECG
+									</a>
+								</li>
+								<li style="margin: 0 12px;">
+									<a href="/find_doctors" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-stethoscope mr-2"></i>Doctors
+									</a>
+								</li>
+								<li style="margin: 0 12px;">
+									<a href="/my_appointments" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-calendar mr-2"></i>Appointments
+									</a>
+								</li>
+								<li style="margin: 0 12px; position: relative;" class="dropdown-nav">
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-history mr-2"></i>History <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; left: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="/view_search_pat" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-chart-line mr-2"></i>Prediction History
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="/ecg_history" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-heartbeat mr-2"></i>ECG History
+											</a>
+										</li>
 									</ul>
 								</li>
-							</ul>
-						</nav>
-					</div>
-					<div class="nav_w3ls" style="margin-right:3%">
-
-						<nav>
-							<label for="drop4" class="toggle">Menu</label>
-							<input type="checkbox" id="drop4" />
-							<ul class="menu">
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2" style="background:#6a6767;padding:8px">
-									<!-- First Tier Drop Down -->
-									<label for="drop-3" class="toggle toogle-3"> <span class="fa fa-angle-down" aria-hidden="true"></span>
-									</label>
-									<a href="#"><i class="fa fa-sign-in"></i> Hello,{{request.user.username}} <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:8%;width:80%;margin-right:5%">
-										<li style="width:100%;"><a href="{% url 'change_password' %}" class="drop-text"> Password</a></li>
-										<li style="width:100%;"><a href="{% url 'logout' %}" class="drop-text"> Logout</a></li>
+								<li style="margin: 0 12px;">
+									<a href="/profile_doctor" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-user mr-2"></i>Profile
+									</a>
+								</li>
+								<li style="margin: 0 12px; position: relative;" class="dropdown-nav">
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.2); transition: all 0.3s;">
+										<i class="fa fa-user-circle mr-2"></i>{{request.user.username}} <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="/sent_feedback" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-comment mr-2"></i>Feedback
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="{% url 'change_password' %}" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-key mr-2"></i>Change Password
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="{% url 'logout' %}" style="display: block; padding: 10px 20px; color: #dc3545; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-sign-out mr-2"></i>Logout
+											</a>
+										</li>
 									</ul>
 								</li>
 							</ul>
 						</nav>
 					</div>
 					{% elif request.user.doctor_set.all.0 %}
-					<div class="nav_w3ls" style="margin-right:4%">
+					<div class="nav_w3ls d-flex align-items-center">
 						<nav>
-							<label for="drop5" class="toggle">Menu</label>
+							<label for="drop5" class="toggle" style="color: white; cursor: pointer; font-size: 1.5rem;">
+								<i class="fa fa-bars"></i>
+							</label>
 							<input type="checkbox" id="drop5" />
-							<ul class="menu" style="padding:15px;width:100%">
-								<li><a href="{% url 'doctor_home' %}" class="active">Home</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2">
-									<a href="/profile_doctor">My Detail</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2">
-									<a href="view_search_pat">Searched Data</a></li>
-
-							</ul>
-						</nav>
-					</div>
-					<div class="nav_w3ls" style="margin-right:3%">
-
-						<nav>
-							<label for="drop6" class="toggle">Menu</label>
-							<input type="checkbox" id="drop6" />
-							<ul class="menu">
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2" style="background:#6a6767;padding:8px">
-									<!-- First Tier Drop Down -->
-									<label for="drop6" class="toggle toogle-2"> <span class="fa fa-angle-down" aria-hidden="true"></span>
-									</label>
-									<a href="#"><i class="fa fa-user"></i> {{request.user.username}} <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:10%;width:80%;margin-right:5%">
-										<li style="width:100%;"><a href="{% url 'change_password' %}" class="drop-text">Password</a></li>
-										<li style="width:100%;"><a href="{% url 'logout' %}" class="drop-text">Logout</a></li>
+							<ul class="menu d-flex align-items-center" style="margin: 0; padding: 0; list-style: none;">
+								<li style="margin: 0 15px;">
+									<a href="{% url 'doctor_home' %}" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-home mr-2"></i>Dashboard
+									</a>
+								</li>
+								<li style="margin: 0 15px;">
+									<a href="/profile_doctor" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-id-card mr-2"></i>My Profile
+									</a>
+								</li>
+								<li style="margin: 0 15px;">
+									<a href="/view_search_pat" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-database mr-2"></i>Patient Data
+									</a>
+								</li>
+								<li style="margin: 0 15px; position: relative;" class="dropdown-nav">
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(255,255,255,0.2); transition: all 0.3s;">
+										<i class="fa fa-user-circle mr-2"></i>Dr. {{request.user.username}} <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="{% url 'change_password' %}" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-key mr-2"></i>Change Password
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="{% url 'logout' %}" style="display: block; padding: 10px 20px; color: #dc3545; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-sign-out mr-2"></i>Logout
+											</a>
+										</li>
 									</ul>
 								</li>
-
-
-
 							</ul>
 						</nav>
 					</div>
 					{% else %}
-					<div class="nav_w3ls" style="margin-right:4%">
+					<div class="nav_w3ls d-flex align-items-center">
 						<nav>
-							<label for="drop7" class="toggle">Menu</label>
+							<label for="drop7" class="toggle" style="color: white; cursor: pointer; font-size: 1.5rem;">
+								<i class="fa fa-bars"></i>
+							</label>
 							<input type="checkbox" id="drop7" />
-							<ul class="menu" style="padding:15px;width:100%">
-								<li><a href="{% url 'home' %}" class="active">Home</a></li>
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2">
-									<a href="{% url 'about' %}">About Us</a></li>
-								<li><a href="{% url 'contact' %}">Contact Us</a></li>
-							</ul>
-						</nav>
-					</div>
-					<div class="nav_w3ls" style="margin-right:3%">
-
-						<nav>
-							<label for="drop" class="toggle">Menu</label>
-							<input type="checkbox" id="drop" />
-							<ul class="menu">
-								<li class="mx-lg-4 mx-md-3 my-md-0 my-2" style="background:#6a6767;padding:8px">
-									<!-- First Tier Drop Down -->
-									<label for="drop-2" class="toggle toogle-2"> <span class="fa fa-angle-down" aria-hidden="true"></span>
-									</label>
-									<a href="#"><i class="fa fa-sign-in"></i> Login <span class="fa fa-angle-down" aria-hidden="true"></span></a>
-									<ul style="margin-top:10%;width:80%;margin-right:5%">
-										<li style="width:100%;"><a href="{% url 'login_admin' %}" class="drop-text">Admin</a></li>
-										<li style="width:100%;"><a href="{% url 'login' %}" class="drop-text">User</a></li>
-									</ul>
+							<ul class="menu d-flex align-items-center" style="margin: 0; padding: 0; list-style: none;">
+								<li style="margin: 0 15px;">
+									<a href="{% url 'home' %}" style="color: white; text-decoration: none; font-weight: 500; padding: 8px 16px; border-radius: 6px; transition: all 0.3s;">
+										<i class="fa fa-home mr-2"></i>Home
+									</a>
 								</li>
 
-
-
+								<li style="margin: 0 15px; position: relative;" class="dropdown-nav">
+									<a href="#" style="color: white; text-decoration: none; font-weight: 500; padding: 10px 20px; border-radius: 6px; background: rgba(255,255,255,0.2); transition: all 0.3s;">
+										<i class="fa fa-sign-in mr-2"></i>Login <span class="fa fa-angle-down ml-1"></span>
+									</a>
+									<ul class="dropdown-menu" style="position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 160px; margin-top: 8px; padding: 8px 0; list-style: none; display: none; z-index: 1000;">
+										<li style="width: 100%;">
+											<a href="{% url 'login_admin' %}" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-user-shield mr-2"></i>Admin Login
+											</a>
+										</li>
+										<li style="width: 100%;">
+											<a href="{% url 'login' %}" style="display: block; padding: 10px 20px; color: #333; text-decoration: none; transition: all 0.2s;">
+												<i class="fa fa-user mr-2"></i>User Login
+											</a>
+										</li>
+									</ul>
+								</li>
+								<li style="margin: 0 0 0 15px;">
+									<a href="{% url 'signup' %}" style="color: #667eea; background: white; text-decoration: none; font-weight: 600; padding: 10px 24px; border-radius: 6px; transition: all 0.3s; display: inline-block;">
+										<i class="fa fa-user-plus mr-2"></i>Sign Up
+									</a>
+								</li>
 							</ul>
 						</nav>
 					</div>
@@ -303,8 +450,7 @@ $(document).ready(function() {
 		<div class="container py-3">
 			<div class="row">
 				<div class="col-lg-7 w3ls_footer_grid1_left text-lg-left text-center">
-					<p style="color:white">&copy; 2021 Heart Disease Prediction. All rights reserved | Design by BinaryCoders</a>
-					</p>
+					<p style="color:white">&copy; 2025 Heart Disease Prediction System. All rights reserved.</p>
 				</div>
 				<div class="col-lg-5 w3ls_footer_grid_left1_pos text-lg-right text-center mt-lg-0 mt-2">
 					<ul style="color:white">
