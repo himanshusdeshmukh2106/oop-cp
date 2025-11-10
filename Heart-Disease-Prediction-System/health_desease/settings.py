@@ -20,10 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from root directory
 root_env_path = BASE_DIR.parent / '.env'
 if root_env_path.exists():
-    load_dotenv(root_env_path)
+    load_dotenv(root_env_path, override=True)
 else:
     # Try loading from current directory
-    load_dotenv()
+    load_dotenv(override=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -41,7 +41,7 @@ ALLOWED_HOSTS = ['*']
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
 
 # Base URL for Twilio callbacks (use ngrok URL for local development with AI conversation)
-BASE_URL = os.getenv('BASE_URL', 'https://3ff15dbaf691.ngrok-free.app')
+BASE_URL = os.getenv('BASE_URL', 'https://1ccc533a786f.ngrok-free.app')
 
 
 # Application definition
@@ -148,8 +148,4 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR,'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Add GOOGLE_MAPS_API_KEY to context processors
-TEMPLATES[0]['OPTIONS']['context_processors'].append('django.template.context_processors.request')
-TEMPLATES[0]['OPTIONS']['context_processors'].append('health_desease.context_processors.google_maps_key')
 

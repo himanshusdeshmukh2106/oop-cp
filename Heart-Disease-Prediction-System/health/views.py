@@ -59,12 +59,6 @@ def User_Home(request):
 def Doctor_Home(request):
     return render(request,'doctor_home.html')
 
-def About(request):
-    return render(request,'about.html')
-
-def Contact(request):
-    return render(request,'contact.html')
-
 
 def Gallery(request):
     return render(request,'gallery.html')
@@ -738,13 +732,15 @@ def ai_book_appointment(request):
             # Get reason from recent ECG or prediction
             reason = "Cardiac consultation - Recent ECG analysis showed concerning results"
             
-            # Initiate AI call
+            # Initiate AI call with hospital details
             print(f"DEBUG: Calling create_simple_booking_call with phone: {hospital_phone}")
             result = create_simple_booking_call(
                 hospital_phone,
                 patient_name,
                 patient_contact,
-                reason
+                reason,
+                hospital_name=hospital_name,
+                hospital_address=hospital_address
             )
             
             print(f"DEBUG: Call result: {result}")
@@ -848,11 +844,64 @@ def ai_call_handler(request):
 
 @csrf_exempt
 def call_status(request):
-    """Handle call status callbacks"""
-    call_sid = request.POST.get('CallSid')
-    call_status = request.POST.get('CallStatus')
+    """Handle call status callbacks and send notifications when call completes"""
+    from .ai_calling_agent import AICallingAgent
     
-    # Log call status (in production, save to database)
-    print(f"Call {call_sid} status: {call_status}")
+    call_sid = request.POST.get('CallSid')
+    call_status_value = request.POST.get('CallStatus')
+    call_duration = request.POST.get('CallDuration', '0')
+    
+    print(f"\n{'='*60}")
+    print(f"📞 CALL STATUS UPDATE")
+    print(f"{'='*60}")
+    print(f"Call SID: {call_sid}")
+    print(f"Status: {call_status_value}")
+    print(f"Duration: {call_duration} seconds")
+    
+    # When call completes, send SMS and WhatsApp notifications
+    if call_status_value == 'completed':
+        print(f"\n✅ Call completed! Sending notifications...")
+        
+        try:
+            agent = AICallingAgent()
+            
+            # Get call data from conversation history
+            if call_sid in agent.conversation_history:
+                call_data = agent.conversation_history[call_sid]
+                patient_data = call_data.get('patient_data', {})
+                appointment_details = call_data.get('appointment_details', {})
+                
+                # Get patient phone from environment (test number)
+                import os
+                patient_phone = os.getenv('TEST_PHONE_NUMBER', patient_data.get('contact', ''))
+                
+                if patient_phone:
+                    # Prepare appointment details for notification
+                    notification_details = {
+                        'hospital_name': appointment_details.get('hospital_name', 'Hospital'),
+                        'hospital_address': appointment_details.get('hospital_address', 'Address not available'),
+                        'hospital_phone': appointment_details.get('hospital_phone', 'Phone not available'),
+                        'date': 'To be confirmed by hospital',
+                        'time': 'To be confirmed by hospital',
+                        'status': 'AI call completed - Awaiting hospital confirmation',
+                        'call_duration': f"{call_duration} seconds"
+                    }
+                    
+                    # Send both SMS and WhatsApp
+                    results = agent.send_appointment_notifications(patient_phone, notification_details)
+                    
+                    if results['sms']:
+                        print(f"✅ SMS notification sent")
+                    if results['whatsapp']:
+                        print(f"✅ WhatsApp notification sent")
+                else:
+                    print(f"⚠️  No patient phone number available")
+            else:
+                print(f"⚠️  No conversation history found for call {call_sid}")
+                
+        except Exception as e:
+            print(f"❌ Error sending notifications: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     return HttpResponse('OK')

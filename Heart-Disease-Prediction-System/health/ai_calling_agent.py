@@ -44,7 +44,7 @@ class AICallingAgent:
         # Initialize Gemini AI
         if self.gemini_api_key:
             genai.configure(api_key=self.gemini_api_key)
-            self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            self.gemini_model = genai.GenerativeModel('gemini-2.0-flash')
         else:
             self.gemini_model = None
         
@@ -412,35 +412,118 @@ Respond appropriately to continue the conversation."""
         Send SMS confirmation to patient after booking
         """
         if not self.client:
+            print("❌ Twilio client not configured")
             return False
         
-        message_body = f"""
-        Appointment Booking Confirmation
+        # Format phone number
+        if not patient_phone.startswith('+'):
+            patient_phone = f"+{patient_phone}"
         
-        Hospital: {appointment_details.get('hospital_name')}
-        Date: {appointment_details.get('date')}
-        Time: {appointment_details.get('time')}
-        
-        Please call the hospital to confirm: {appointment_details.get('hospital_phone')}
-        
-        - Heart Disease Prediction System
-        """
+        message_body = f"""🏥 Appointment Booking Confirmation
+
+Hospital: {appointment_details.get('hospital_name', 'N/A')}
+Address: {appointment_details.get('hospital_address', 'N/A')}
+Phone: {appointment_details.get('hospital_phone', 'N/A')}
+
+Date: {appointment_details.get('date', 'To be confirmed')}
+Time: {appointment_details.get('time', 'To be confirmed')}
+
+Status: {appointment_details.get('status', 'Pending confirmation')}
+
+Please call the hospital to confirm your appointment.
+
+- Heart Disease Prediction System"""
         
         try:
-            message = self.client.messages.create(
+            # Send SMS
+            sms = self.client.messages.create(
                 body=message_body,
                 from_=self.phone_number,
                 to=patient_phone
             )
-            return message.sid
+            print(f"✅ SMS sent successfully! SID: {sms.sid}")
+            return sms.sid
         except Exception as e:
-            print(f"Failed to send SMS: {str(e)}")
+            print(f"❌ Failed to send SMS: {str(e)}")
             return False
+    
+    def send_whatsapp_confirmation(self, patient_phone, appointment_details):
+        """
+        Send WhatsApp confirmation to patient after booking (Plain Text)
+        """
+        if not self.client:
+            print("❌ Twilio client not configured")
+            return False
+        
+        # Format phone number for WhatsApp
+        if not patient_phone.startswith('+'):
+            patient_phone = f"+{patient_phone}"
+        
+        # WhatsApp requires 'whatsapp:' prefix
+        whatsapp_to = f"whatsapp:{patient_phone}"
+        
+        # Use WhatsApp sandbox number from environment or default
+        whatsapp_sandbox = os.getenv('WHATSAPP_SANDBOX_NUMBER', '+14155238886')
+        whatsapp_from = f"whatsapp:{whatsapp_sandbox}"
+        
+        # Create plain text message with appointment details
+        message_body = f"""🏥 *Appointment Booking Confirmation*
+
+*Hospital:* {appointment_details.get('hospital_name', 'N/A')}
+*Address:* {appointment_details.get('hospital_address', 'N/A')}
+*Phone:* {appointment_details.get('hospital_phone', 'N/A')}
+
+*Date:* {appointment_details.get('date', 'To be confirmed')}
+*Time:* {appointment_details.get('time', 'To be confirmed')}
+
+*Status:* {appointment_details.get('status', 'Pending confirmation')}
+
+Please call the hospital to confirm your appointment.
+
+_Heart Disease Prediction System_"""
+        
+        try:
+            # Send WhatsApp message with plain text
+            whatsapp = self.client.messages.create(
+                from_=whatsapp_from,
+                body=message_body,
+                to=whatsapp_to
+            )
+            print(f"✅ WhatsApp sent successfully! SID: {whatsapp.sid}")
+            print(f"   Mode: Plain text message")
+            return whatsapp.sid
+        except Exception as e:
+            print(f"❌ Failed to send WhatsApp: {str(e)}")
+            print(f"   Note: Make sure you've joined the WhatsApp sandbox")
+            print(f"   Send 'join <code>' to {whatsapp_sandbox} on WhatsApp")
+            return False
+    
+    def send_appointment_notifications(self, patient_phone, appointment_details):
+        """
+        Send both SMS and WhatsApp notifications
+        """
+        results = {
+            'sms': False,
+            'whatsapp': False
+        }
+        
+        print(f"\n📱 Sending appointment notifications to {patient_phone}")
+        print(f"   Hospital: {appointment_details.get('hospital_name', 'N/A')}")
+        
+        # Send SMS
+        sms_sid = self.send_sms_confirmation(patient_phone, appointment_details)
+        results['sms'] = bool(sms_sid)
+        
+        # Send WhatsApp
+        whatsapp_sid = self.send_whatsapp_confirmation(patient_phone, appointment_details)
+        results['whatsapp'] = bool(whatsapp_sid)
+        
+        return results
 
 
-def create_simple_booking_call(hospital_phone, patient_name, patient_contact, reason):
+def create_simple_booking_call(hospital_phone, patient_name, patient_contact, reason, hospital_name=None, hospital_address=None):
     """
-    Simplified function to create an appointment booking call
+    Simplified function to create an appointment booking call with hospital details
     """
     agent = AICallingAgent()
     
@@ -453,6 +536,9 @@ def create_simple_booking_call(hospital_phone, patient_name, patient_contact, re
         'reason': reason,
         'date': 'As soon as possible',
         'time': 'Morning preferred',
+        'hospital_name': hospital_name or 'Hospital',
+        'hospital_phone': hospital_phone,
+        'hospital_address': hospital_address or 'Address not provided',
     }
     
     try:
